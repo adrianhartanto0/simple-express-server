@@ -1,6 +1,8 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+var childProcess = require('child_process');
 var app = express();
+
 
 //Allow all requests from all domains & localhost
 app.all('/*', function(req, res, next) {
@@ -13,36 +15,44 @@ app.all('/*', function(req, res, next) {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
-var ingredients = [
-    {
-        "id": "234kjw",
-        "text": "Eggs"
-    },
-    {
-        "id": "as82w",
-        "text": "Milk"
-    },
-    {
-        "id": "234sk1",
-        "text": "Bacon"
-    },
-    {
-        "id": "ppo3j3",
-        "text": "Frog Legs"
-    }
-];
 
+app.post('/spawn/:symbol', function(req, res) {
+  console.log("received spawn request")
 
-app.get('/ingredients', function(req, res) {
-    console.log("GET From SERVER");
-    res.send(ingredients);
+  const cmd = `docker run -d --name ${req.params.symbol} --network=host --ulimit memlock=-1 --ipc=host -v /tmp:/tmp --restart=always binance-futures-trade-c`;
+
+  const r =  childProcess.spawnSync("sudo", cmd.split(" "), { encoding: 'utf-8' });
+
+  if (r.output[2].length > 0) {
+    return res.status(500).send("Err spawning");
+  }
+
+  if (r.output[1].length > 0) {
+    return res.sendStatus(200);
+  }
+
+  res.sendStatus(200);
 });
 
-app.post('/ingredients', function(req, res) {
-    var ingredient = req.body;
-    console.log(req.body);
-    ingredients.push(ingredient);
-    res.status(200).send("Successfully posted ingredient");
+app.delete('/:symbol', function(req, res) {
+  console.log("received delete request")
+
+  const cmd = `docker stop ${req.params.symbol}`;
+
+  const r =  childProcess.spawnSync("sudo", cmd.split(" "), { encoding: 'utf-8' });
+
+  if (r.output[2].length > 0) {
+    return res.status(500).send("Error delete");
+  }
+
+  const cmd_stop = `docker rm ${req.params.symbol}`;
+  const res_del =  childProcess.spawnSync("sudo", cmd_stop.split(" "), { encoding: 'utf-8' });
+
+  if (res_del.output[2].length > 0) {
+    return res.status(500).send("Error stopping");
+  }
+
+  res.sendStatus(200);
 });
 
-app.listen(6069);
+app.listen(3333);
