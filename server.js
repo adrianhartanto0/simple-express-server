@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.post('/spawn/:symbol', function(req, res) {
   console.log("received spawn request")
 
-  const cmd = `docker run -d --name ${req.params.symbol} --network=host --ulimit memlock=-1 --ipc=host -v /tmp:/tmp --restart=always binance-futures-trade-c`;
+  const cmd = `docker run -d --name ${req.params.symbol} --network=host --ulimit memlock=-1 -e SYMBOL=${req.params.symbol} --ipc=host -v /tmp:/tmp --restart=always binance-futures-trade-c`;
 
   const r =  childProcess.spawnSync("sudo", cmd.split(" "), { encoding: 'utf-8' });
 
