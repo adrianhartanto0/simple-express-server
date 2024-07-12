@@ -34,6 +34,24 @@ app.post('/spawn/:symbol', function(req, res) {
   res.sendStatus(200);
 });
 
+app.post('/spawn/non-live/:symbol', function(req, res) {
+  console.log("received spawn request")
+
+  const cmd = `docker run -d --name ${req.params.symbol}-non-live --network=host --ulimit memlock=-1 -e SYMBOL=${req.params.symbol} --ipc=host -v /tmp:/tmp --restart=always binance-futures-trade-n`;
+
+  const r =  childProcess.spawnSync("sudo", cmd.split(" "), { encoding: 'utf-8' });
+
+  if (r.output[2].length > 0) {
+    return res.status(500).send("Err spawning");
+  }
+
+  if (r.output[1].length > 0) {
+    return res.sendStatus(200);
+  }
+
+  res.sendStatus(200);
+});
+
 app.delete('/:symbol', function(req, res) {
   console.log("received delete request")
 
