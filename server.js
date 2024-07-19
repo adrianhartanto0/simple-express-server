@@ -35,9 +35,12 @@ app.post('/spawn/:symbol', function(req, res) {
 });
 
 app.post('/spawn/non-live/:symbol', function(req, res) {
-  console.log("received spawn request")
+  const { query } = req;
+  const { sell_request_ids } = query;
 
-  const cmd = `docker run -d --name ${req.params.symbol}-non-live --network=host --ulimit memlock=-1 -e SYMBOL=${req.params.symbol} --ipc=host -v /tmp:/tmp --restart=always binance-futures-trade-n`;
+  console.log(`received spawn request ${symbol} ${sell_request_ids}`)
+
+  const cmd = `docker run -d --name ${req.params.symbol}-non-live --network=host --ulimit memlock=-1 -e SYMBOL=${req.params.symbol} -e SELL_REQUEST_IDS=${sell_request_ids} --ipc=host -v /tmp:/tmp --restart=always binance-futures-trade-n`;
 
   const r =  childProcess.spawnSync("sudo", cmd.split(" "), { encoding: 'utf-8' });
 
