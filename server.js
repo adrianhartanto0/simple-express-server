@@ -78,7 +78,7 @@ app.delete('/:symbol', function(req, res) {
   const r =  childProcess.spawnSync("sudo", cmd.split(" "), { encoding: 'utf-8' });
 
   if (r.output[2].length > 0) {
-    return res.status(500).send(`Error delete ${r.output[2]});
+    return res.status(500).send(`Error delete ${r.output[2]}`);
   }
 
   const cmd_stop = `docker rm ${req.params.symbol}`;
