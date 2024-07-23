@@ -38,9 +38,24 @@ app.post('/spawn/non-live/:symbol', function(req, res) {
   const { query } = req;
   const { sell_request_ids } = query;
 
-  console.log(`received spawn request ${symbol} ${sell_request_ids}`)
+  const raw_sell_request_data = req.body.split(",")
 
-  const cmd = `docker run -d --name ${req.params.symbol}-non-live --network=host --ulimit memlock=-1 -e SYMBOL=${req.params.symbol} -e SELL_REQUEST_IDS=${sell_request_ids} --ipc=host -v /tmp:/tmp --restart=always binance-futures-trade-n`;
+  let new_sell_request_data = {};
+
+  for (item in raw_sell_request_data) {
+    const parsed_request_data = JSON.parse(item)
+    new_sell_request_data = Object.assign(new_sell_request_data, parsed_request_data);
+  }
+
+  let sell_request_data_env = "";
+
+  for (let key in json_sell_request_data) {
+    sell_request_data_env += `-e ${key}=${json_sell_request_data[key]} `
+  }
+
+  console.log(`${req.params.symbol} ${sell_request_ids} ${sell_request_data_env}`)
+
+  const cmd = `docker run -d --name ${req.params.symbol}-non-live --network=host --ulimit memlock=-1 ${sell_request_data_env} -e SYMBOL=${req.params.symbol} -e SELL_REQUEST_IDS=${sell_request_ids} --ipc=host -v /tmp:/tmp --restart=always binance-futures-trade-n`;
 
   const r =  childProcess.spawnSync("sudo", cmd.split(" "), { encoding: 'utf-8' });
 
@@ -63,7 +78,7 @@ app.delete('/:symbol', function(req, res) {
   const r =  childProcess.spawnSync("sudo", cmd.split(" "), { encoding: 'utf-8' });
 
   if (r.output[2].length > 0) {
-    return res.status(500).send("Error delete");
+    return res.status(500).send(`Error delete ${r.output[2]}`);
   }
 
   const cmd_stop = `docker rm ${req.params.symbol}`;
