@@ -65,7 +65,7 @@ app.post('/spawn/non-live/:symbol', function(req, res) {
   const r =  childProcess.spawnSync("sudo", cmd.split(" "), { encoding: 'utf-8' });
 
   if (r.output[2].length > 0) {
-    return res.status(500).send("Err spawning");
+    return res.status(500).send(`Err spawning ${r.output[2]}`);
   }
 
   if (r.output[1].length > 0) {
