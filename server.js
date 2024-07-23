@@ -49,7 +49,7 @@ app.post('/spawn/non-live/:symbol', function(req, res) {
 
   let sell_request_data_env = "";
 
-  for (let key in json_sell_request_data) {
+  for (let key in new_sell_request_data) {
     sell_request_data_env += `-e ${key}=${json_sell_request_data[key]} `
   }
 
