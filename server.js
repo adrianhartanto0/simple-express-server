@@ -44,7 +44,7 @@ app.post('/spawn/non-live/:symbol', function(req, res) {
 
   console.log(raw_sell_request_data)
 
-  raw_sell_request_data.each(item => {
+  raw_sell_request_data.forEach(item => {
     const parsed_request_data = JSON.parse(item)
     console.log(parsed_request_data)
 
@@ -55,7 +55,7 @@ app.post('/spawn/non-live/:symbol', function(req, res) {
   let sell_request_data_env = "";
 
   for (let key in new_sell_request_data) {
-    sell_request_data_env += `-e ${key}=${json_sell_request_data[key]} `
+    sell_request_data_env += `-e ${key}=${new_sell_request_data[key]} `
   }
 
   console.log(`${req.params.symbol} ${sell_request_ids} ${sell_request_data_env}`)
