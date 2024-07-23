@@ -36,9 +36,9 @@ app.post('/spawn/:symbol', function(req, res) {
 
 app.post('/spawn/non-live/:symbol', function(req, res) {
   const { query } = req;
-  const { sell_request_ids } = query;
+  const { sell_request_ids, data } = query;
 
-  const raw_sell_request_data = req.body.split(",")
+  const raw_sell_request_data = data.split(",")
 
   let new_sell_request_data = {};
 
@@ -78,7 +78,7 @@ app.delete('/:symbol', function(req, res) {
   const r =  childProcess.spawnSync("sudo", cmd.split(" "), { encoding: 'utf-8' });
 
   if (r.output[2].length > 0) {
-    return res.status(500).send(`Error delete ${r.output[2]}`);
+    return res.status(500).send(`Error delete ${r.output[2]});
   }
 
   const cmd_stop = `docker rm ${req.params.symbol}`;
