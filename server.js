@@ -42,7 +42,9 @@ app.post('/spawn/non-live/:symbol', function(req, res) {
 
   let new_sell_request_data = {};
 
-  for (item in raw_sell_request_data) {
+  console.log(raw_sell_request_data)
+
+  for (let item in raw_sell_request_data) {
     const parsed_request_data = JSON.parse(item)
     new_sell_request_data = Object.assign(new_sell_request_data, parsed_request_data);
   }
