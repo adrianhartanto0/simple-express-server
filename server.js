@@ -37,7 +37,7 @@ app.post('/spawn/:symbol', function(req, res) {
 
   let sell_request_data_env = Object.values(new_sell_request_data).join(",")
 
-  const cmd = `docker run -d --network=host --memory=10m -e SYMBOL=${req.params.symbol} -e SELL_REQUEST_DATA=${sell_request_data_env} --ipc=host -v /tmp:/tmp --restart=on-failure binance-futures-trade-c`;
+  const cmd = `docker run -d --name ${req.params.symbol} --network=host --memory=10m -e SYMBOL=${req.params.symbol} -e SELL_REQUEST_DATA=${sell_request_data_env} --ipc=host -v /tmp:/tmp --restart=on-failure binance-futures-trade-c`;
 
   const r =  childProcess.spawnSync("sudo", cmd.split(" "), { encoding: 'utf-8' });
 
