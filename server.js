@@ -18,6 +18,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.post('/spawn/:symbol', function(req, res) {
   console.log("received spawn request")
+  const { query } = req;
   const { data } = query;
 
   const raw_sell_request_data = data.split(",")
