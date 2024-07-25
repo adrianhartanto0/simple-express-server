@@ -18,8 +18,25 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.post('/spawn/:symbol', function(req, res) {
   console.log("received spawn request")
+  const { data } = query;
 
-  const cmd = `docker run -d --name ${req.params.symbol} --network=host --ulimit memlock=-1 -e SYMBOL=${req.params.symbol} --ipc=host -v /tmp:/tmp --restart=always binance-futures-trade-c`;
+  const raw_sell_request_data = data.split(",")
+
+  let new_sell_request_data = {};
+
+  console.log(raw_sell_request_data)
+
+  raw_sell_request_data.forEach(item => {
+    const parsed_request_data = JSON.parse(item)
+    console.log(parsed_request_data)
+
+    new_sell_request_data = Object.assign(new_sell_request_data, parsed_request_data);
+    console.log(new_sell_request_data)
+  })
+
+  let sell_request_data_env = Object.values(new_sell_request_data).join(",")
+
+  const cmd = `docker run -d --name ${req.params.symbol} --network=host --ulimit memlock=-1 -e SYMBOL=${req.params.symbol} SELL_REQUEST_DATA=${sell_request_data_env} --ipc=host -v /tmp:/tmp --restart=always binance-futures-trade-c`;
 
   const r =  childProcess.spawnSync("sudo", cmd.split(" "), { encoding: 'utf-8' });
 
