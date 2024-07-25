@@ -74,7 +74,7 @@ app.post('/spawn/non-live/:symbol/:name', function(req, res) {
 
   console.log(`${req.params.symbol} ${sell_request_ids} ${sell_request_data_env}`)
 
-  const cmd = `docker run -d --name ${req.params.name} --network=host --memory=10m -e SELL_REQUEST_DATA=${sell_request_data_env} -e SYMBOL=${req.params.symbol} -e SELL_REQUEST_IDS=${sell_request_ids} --ipc=host -v /tmp:/tmp --restart=on-failure binance-futures-trade-n`;
+  const cmd = `docker run -d --name ${req.params.name} --network=host --memory=10m -e SELL_REQUEST_DATA=${sell_request_data_env} -e SYMBOL=${req.params.symbol} --ipc=host -v /tmp:/tmp --restart=on-failure binance-futures-trade-n`;
 
 
   const r =  childProcess.spawnSync("sudo", cmd.split(" "), { encoding: 'utf-8' });
