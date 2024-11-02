@@ -52,6 +52,29 @@ app.post('/spawn/:symbol', function(req, res) {
   res.sendStatus(200);
 });
 
+app.post('/spawn/new-trade-checker/:symbol', function(req, res) {
+  console.log("received new trade checker spawn request")
+  const { query } = req;
+  const { data } = query;
+
+  console.log(data)
+
+  const cmd = `docker run -d --name ${req.params.symbol}-new-trade-checker --network=host --memory=10m -e SYMBOL=${req.params.symbol} -e CHECK_ORDER_DATA=${data} --ipc=host -v /tmp:/tmp --restart=on-failure new-order-checker`;
+
+  const r =  childProcess.spawnSync("sudo", cmd.split(" "), { encoding: 'utf-8' });
+
+  if (r.output[2].length > 0) {
+    return res.status(500).send(r.output[2]);
+  }
+
+  if (r.output[1].length > 0) {
+    return res.sendStatus(200);
+  }
+
+  res.sendStatus(200);
+});
+
+
 app.post('/spawn/non-live/:symbol/:name', function(req, res) {
   const { query } = req;
   const { sell_request_ids, data } = query;
